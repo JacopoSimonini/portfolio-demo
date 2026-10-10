@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jacopo Simonini</title>
+
+    <meta name="description" content="Jacopo Simonini - Cybersecurity Master's student at the University of Padua. Technology enthusiast focused on security, with a minimal, a terminal, a retro desktop and a 3D neon street version of the portfolio.">
+    <meta name="author" content="Jacopo Simonini">
+
+    <!-- Open Graph / social sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Jacopo Simonini">
+    <meta property="og:description" content="Cybersecurity Master's student at the University of Padua. Browse the minimal portfolio, or switch to the terminal, retro desktop or 3D neon street style.">
+    <meta property="og:image" content="user-icon.png">
+
+    <link rel="icon" type="image/png" href="js.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
+    <!-- ?v= : bump it after changing these files, so browsers don't keep an old copy
+         (script.js also passes it to the 3D view, neon/neon.js) -->
+    <link rel="stylesheet" href="style.css?v=15">
+    <link rel="stylesheet" href="retro/retro.css?v=15">
+    <link rel="stylesheet" href="neon/neon.css?v=15">
+
+    <!-- Three.js for the 3D style; only downloaded the first time that style is opened -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body class="classic-dark">
+
+    <div class="nav-container">
+        <button id="theme-toggle-btn" class="theme-btn" aria-label="Switch to light mode">
+
+            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+
+            <svg class="moon-icon hidden-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+
+        </button>
+
+        <div class="style-switch" role="group" aria-label="Choose the style">
+            <button type="button" class="style-opt" data-view="classic" aria-pressed="true">Minimal</button>
+            <button type="button" class="style-opt" data-view="terminal" aria-pressed="false" aria-label="Terminal">&gt;_</button>
+            <button type="button" class="style-opt" data-view="neon" aria-pressed="false" aria-label="3D neon street" title="3D street (街, machi)" lang="ja">街</button>
+            <button type="button" class="style-opt" data-view="retro" aria-pressed="false">Retro</button>
+        </div>
+    </div>
+
+    <div id="classic-view" class="view active">
+
+        <header class="hero">
+            <img src="user-icon.png" alt="Jacopo Simonini" class="profile-pic" width="176" height="176">
+
+            <div class="hero-text">
+                <h1>Jacopo Simonini</h1>
+                <p class="hero-role">Cybersecurity master's student at the University of Padua</p>
+
+                <p class="subtitle">
+                    <span class="sr-only">Tech enthusiast, problem solver and continuous learner</span>
+                    <span class="prompt-line" aria-hidden="true"><span class="prompt-sign">$</span><span id="typewriter-text"></span><span class="cursor1"></span></span>
+                </p>
+
+                <div class="hero-actions">
+                    <a href="cv.pdf" download="Jacopo_Simonini_Resume.pdf" id="download-btn" class="btn btn-primary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Download resume
+                    </a>
+                    <a href="#contact" id="contact-jump-btn" class="btn btn-secondary">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        Contact
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <section class="content-section">
+            <h2>
+                <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                About Me
+            </h2>
+            <p id="about-data">Hi, I'm Jacopo Simonini. I am a technology enthusiast with a dedicated focus on cybersecurity. In a world that runs on code, I believe security isn't just a feature, it's a foundation.
+My passion lies in understanding how systems work so I can protect them from how they break. Whether I'm analyzing network traffic, scripting automation tools, or solving complex security puzzles, I approach every challenge with curiosity and a defensive mindset. Want a different view? Use the switch at the bottom of the screen to open this portfolio as a terminal, a retro desktop or a 3D neon street.</p>
+        </section>
+
+        <section class="content-section">
+            <h2>
+                <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                Projects
+            </h2>
+
+            <!-- Featured projects: overview always visible. The terminal and retro styles list these first.
+                 data-tagline (optional) is the one-line description in the terminal's project list;
+                 without it, the terminal uses the first sentence of the summary -->
+            <div class="featured-grid" id="featured-projects">
+                <article class="project-card" data-featured data-title="Anomaly Detection" data-link="https://github.com/JacopoSimonini/Anomaly_Detection">
+                    <span class="project-eyebrow">Featured</span>
+                    <h3 class="project-card-title">Anomaly Detection</h3>
+                    <p class="project-summary">Finds faulty water pumps by their sound. A convolutional autoencoder learns what normal audio looks like as log-mel spectrograms, and classical detectors flag what doesn't fit.</p>
+                    <p class="project-full" id="anomaly-full">This project is a university study on detecting anomalies in water-pump audio recordings. Each recording is split into short windows and converted into log-mel spectrograms, and a convolutional autoencoder is trained on normal sounds only. The compressed representations it learns are then fed to classical detectors such as Isolation Forest, Local Outlier Factor and One-Class SVM, and compared with the autoencoder's own reconstruction error. The Python pipeline runs end to end in a Jupyter notebook and is covered by unit tests written with pytest.</p>
+                    <ul class="project-tags" aria-label="Technologies"><li>Python</li><li>Autoencoder</li><li>Jupyter</li><li>pytest</li></ul>
+                    <div class="project-card-foot">
+                        <button type="button" class="read-more" aria-expanded="false" aria-controls="anomaly-full">Read more</button>
+                        <a href="https://github.com/JacopoSimonini/Anomaly_Detection" class="github-link" target="_blank" rel="noopener noreferrer">View on GitHub <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"></path><polyline points="8 7 17 7 17 16"></polyline></svg></a>
+                    </div>
+                </article>
+
+                <article class="project-card" data-featured data-title="RIS-Drone Simulation" data-tagline="MATLAB drone simulation with RIS at 10.7 GHz" data-link="https://github.com/JacopoSimonini/simulate_drone">
+                    <span class="project-eyebrow">Featured</span>
+                    <h3 class="project-card-title">RIS-Drone Simulation</h3>
+                    <p class="project-summary">Simulates a drone talking to several transmitters through Reconfigurable Intelligent Surfaces at 10.7 GHz, and measures how flight pattern and speed change the signal.</p>
+                    <p class="project-full" id="ris-drone-full">This project provides a MATLAB-based simulation for modeling wireless communication between a drone and multiple transmitters enhanced by Reconfigurable Intelligent Surfaces (RIS). The simulation leverages the QuaDRiGa channel model to evaluate how different movement patterns, speeds, and transmitter configurations affect signal propagation in a high-frequency environment at 10.7 GHz. It is designed for research and experimentation in wireless communication systems, RIS-assisted propagation, and UAV (drone) mobility modeling.</p>
+                    <ul class="project-tags" aria-label="Technologies"><li>MATLAB</li><li>QuaDRiGa</li><li>Wireless</li></ul>
+                    <div class="project-card-foot">
+                        <button type="button" class="read-more" aria-expanded="false" aria-controls="ris-drone-full">Read more</button>
+                        <a href="https://github.com/JacopoSimonini/simulate_drone" class="github-link" target="_blank" rel="noopener noreferrer">View on GitHub <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"></path><polyline points="8 7 17 7 17 16"></polyline></svg></a>
+                    </div>
+                </article>
+            </div>
+
+            <h3 class="projects-subhead">More projects</h3>
+
+            <div class="skills-grid" id="projects-grid">
+                <button type="button" class="skill-tag project-btn" aria-expanded="false" aria-controls="project-info-box"
+                    data-title="Mirrored Website"
+                    data-desc="This project is a university assignment focused on replicating the frontend design of the 'The Tennessean' website. The objective is to closely mirror its layout and user interface as it appeared in 2023, acknowledging that the website's current design may have since changed."
+                    data-link="https://github.com/JacopoSimonini/ppm-project">
+                    <span class="project-btn-text">
+                        <span class="project-title">Mirrored Website</span>
+                        <span class="project-tagline">Frontend clone of "The Tennessean" (2023)</span>
+                    </span>
+                </button>
+
+                <button type="button" class="skill-tag project-btn" aria-expanded="false" aria-controls="project-info-box"
+                    data-title="ToDo List Manager"
+                    data-desc="This project is a modular and extensible To-Do List Manager developed in C++. It enables users to create and manage multiple task lists efficiently. The application showcases a clean object-oriented design, incorporates file-based persistence for data storage, and includes comprehensive unit testing implemented with Google Test."
+                    data-link="https://github.com/JacopoSimonini/toDoList">
+                    <span class="project-btn-text">
+                        <span class="project-title">ToDo List Manager</span>
+                        <span class="project-tagline">C++ application, tested with Google Test</span>
+                    </span>
+                </button>
+
+                <button type="button" class="skill-tag project-btn" aria-expanded="false" aria-controls="project-info-box"
+                    data-title="Ecommerce"
+                    data-desc="This project is a full-stack e-commerce web application designed to deliver a seamless online shopping experience. It includes core functionalities such as product browsing, user authentication, shopping cart management, and order processing. The application is structured with a scalable and modular architecture, making it suitable for learning purposes, rapid prototyping, or further extension into a production-ready system."
+                    data-link="https://github.com/JacopoSimonini/ecommerce">
+                    <span class="project-btn-text">
+                        <span class="project-title">Ecommerce</span>
+                        <span class="project-tagline">Full-stack online shopping web app</span>
+                    </span>
+                </button>
+            </div>
+
+            <div id="project-info-box" class="info-box hidden">
+                <h3 id="info-title">Title Here</h3>
+                <p id="info-desc">Description goes here.</p>
+                <a id="info-link" href="#" class="github-link" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>
+                <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                Skills
+            </h2>
+            <div class="skills-grid" id="skills-data">
+                <span class="skill-tag1">HTML & CSS</span>
+                <span class="skill-tag1">JavaScript</span>
+                <span class="skill-tag1">Python</span>
+                <span class="skill-tag1">C++</span>
+                <span class="skill-tag1">LaTeX</span>
+                <span class="skill-tag1">MATLAB</span>
+                <span class="skill-tag1">Linux / CLI</span>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2>
+                <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c3 3 9 3 12 0v-5"></path></svg>
+                Education
+            </h2>
+            <!-- The hidden " - " separators keep the text format the terminal and retro styles read -->
+            <ol class="edu-list" id="education-data">
+                <li class="edu-item"><strong class="edu-title">Cybersecurity</strong><span class="sep" aria-hidden="true"> - </span><span class="edu-meta"><span class="edu-level">Master's degree</span><span class="sep" aria-hidden="true"> - </span><span class="edu-school">University of Padua</span></span><span class="sep" aria-hidden="true"> - </span><span class="edu-when">In progress</span></li>
+                <li class="edu-item"><strong class="edu-title">Computer Engineering</strong><span class="sep" aria-hidden="true"> - </span><span class="edu-meta"><span class="edu-level">Bachelor's degree</span><span class="sep" aria-hidden="true"> - </span><span class="edu-school">University of Florence</span></span><span class="sep" aria-hidden="true"> - </span><span class="edu-when">2024/2025</span></li>
+                <li class="edu-item"><strong class="edu-title">Diploma</strong><span class="sep" aria-hidden="true"> - </span><span class="edu-meta"><span class="edu-level">High school</span><span class="sep" aria-hidden="true"> - </span><span class="edu-school">Liceo Francesco Redi</span></span><span class="sep" aria-hidden="true"> - </span><span class="edu-when">2019/2020</span></li>
+            </ol>
+        </section>
+
+        <section class="content-section">
+            <h2>
+                <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                Languages
+            </h2>
+            <!-- The colon is hidden on the page but kept for the terminal and retro styles -->
+            <ul class="lang-list" id="languages-data">
+                <li class="lang-item"><strong class="lang-name">Italian<span class="lang-colon">:</span></strong> <span class="lang-level">Native</span></li>
+                <li class="lang-item"><strong class="lang-name">English<span class="lang-colon">:</span></strong> <span class="lang-level">B2 level</span></li>
+            </ul>
+        </section>
+
+        <section class="content-section" id="contact">
+            <h2>
+                <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                Contact
+            </h2>
+
+            <ul class="contact-list" id="contact-data">
+                <li class="contact-row">
+                    <span class="contact-label">Email</span>
+                    <a href="mailto:simoninijacopo@gmail.com" class="contact-link" data-label="Email"><span id="email-text">simoninijacopo@gmail.com</span></a>
+                    <button type="button" id="copy-btn" class="copy-btn">Copy</button>
+                </li>
+                <li class="contact-row">
+                    <span class="contact-label">LinkedIn</span>
+                    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="contact-link" data-label="LinkedIn">View LinkedIn profile <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"></path><polyline points="8 7 17 7 17 16"></polyline></svg></a>
+                </li>
+                <li class="contact-row">
+                    <span class="contact-label">GitHub</span>
+                    <a href="https://github.com/jacoposimonini" target="_blank" rel="noopener noreferrer" class="contact-link" data-label="GitHub">View GitHub profile <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"></path><polyline points="8 7 17 7 17 16"></polyline></svg></a>
+                </li>
+            </ul>
+        </section>
+
+    </div>
+
+    <!--
+      Terminal view: a terminal window whose sections are built by script.js
+      from the minimal view above, so the content is never duplicated.
+    -->
+    <div id="terminal-view" class="view hidden">
+        <div class="tw">
+            <div class="tw-bar">
+                <span class="tl tl-r" aria-hidden="true"></span><span class="tl tl-y" aria-hidden="true"></span><span class="tl tl-g" aria-hidden="true"></span>
+                <span class="tw-path">jacopo@portfolio: ~ &mdash; zsh</span>
+                <span class="tw-clock" id="tw-clock" aria-hidden="true"></span>
+            </div>
+            <div class="tw-body" id="tw-body"></div>
+        </div>
+    </div>
+
+    <!-- Retro Desktop style (built on first use) -->
+    <div id="retro-view" hidden></div>
+
+    <!-- 3D neon street style (neon/neon.js, loaded and built on first use) -->
+    <div id="neon-view" hidden></div>
+
+    <script src="script.js?v=15"></script>
+    <script src="retro/wm.js?v=15"></script>
+    <script src="retro/startmenu.js?v=15"></script>
+    <script src="retro/apps.js?v=15"></script>
+    <script src="retro/retro.js?v=15"></script>
+    <footer class="minimal-footer">
+        <p>© 2026 Jacopo Simonini. Designed & built from scratch.</p>
+    </footer>
+</body>
+</html>

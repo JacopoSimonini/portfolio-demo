@@ -1,0 +1,7 @@
+# Every crawler may index the whole site.
+# Before publishing, replace https://example.com/ with the site's real address
+# (the same one used in sitemap.xml).
+User-agent: *
+Allow: /
+
+Sitemap: https://example.com/sitemap.xml

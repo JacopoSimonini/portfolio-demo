@@ -1,0 +1,1221 @@
+/* ==========================================================================
+   Retro Desktop style for the portfolio.
+   Everything is scoped under #retro-view so the minimal and terminal views
+   are never affected. Rules follow the Retro Desktop design system:
+   bevels are inset box-shadows (no borders, no radii, no soft shadows),
+   nothing animates except the boot screen and the screensaver.
+   ========================================================================== */
+
+/* W95FA by Alina Sava, SIL Open Font License 1.1 (see assets/fonts/OFL.txt) */
+@font-face {
+  font-family: 'W95FA';
+  src: url('assets/fonts/w95fa.woff2') format('woff2'), url('assets/fonts/w95fa.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+#retro-view {
+  /* Tokens */
+  --face: #c0c0c0;
+  --hi: #ffffff;
+  --hi2: #dfdfdf;
+  --sh: #808080;
+  --sh2: #0a0a0a;
+  --navy: #000080;
+  --navy-grad: #1084d0;
+  --inactive: #808080;
+  --teal: #008080;
+  --accent: #ffcc00;
+  --font: 'W95FA', 'MS Sans Serif', Tahoma, sans-serif;
+  --taskbar-h: 34px;
+  --cursor: url('assets/cursor.svg') 0 0, auto;
+  /* Wallpaper: a photo uses size 'cover'. For the centered logo on plain teal use
+     url('assets/jacopo-simonini-logo.svg') with size 'min(480px, 70%) auto' */
+  --wallpaper: url('assets/background/pexels-andrea-beate-pflaum.jpg');
+  --wallpaper-size: cover;
+
+  --bevel-raised: inset -1px -1px 0 var(--sh2), inset 1px 1px 0 var(--hi), inset -2px -2px 0 var(--sh), inset 2px 2px 0 var(--hi2);
+  --bevel-sunken: inset 1px 1px 0 var(--sh), inset -1px -1px 0 var(--hi), inset 2px 2px 0 var(--sh2), inset -2px -2px 0 var(--hi2);
+  --bevel-pressed: inset 1px 1px 0 var(--sh2), inset -1px -1px 0 var(--hi), inset 2px 2px 0 var(--sh), inset -2px -2px 0 var(--hi2);
+  --bevel-sunken-thin: inset 1px 1px 0 var(--sh), inset -1px -1px 0 var(--hi);
+
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  overflow: hidden;
+  color: #000;
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.1;
+  text-align: left;
+  letter-spacing: normal;
+  -webkit-font-smoothing: none;
+  cursor: var(--cursor);
+}
+#retro-view[hidden] {
+  display: none;
+}
+#retro-view *,
+#retro-view *::before,
+#retro-view *::after {
+  box-sizing: border-box;
+}
+#retro-view img {
+  image-rendering: pixelated;
+}
+#retro-view button {
+  font-family: var(--font);
+}
+
+/* Bevel utilities */
+#retro-view .raised { box-shadow: var(--bevel-raised); }
+#retro-view .sunken { box-shadow: var(--bevel-sunken); }
+#retro-view .sunken-thin { box-shadow: var(--bevel-sunken-thin); }
+#retro-view .pressed { box-shadow: var(--bevel-pressed); }
+
+/* Focus ring: yellow outline + black halo */
+#retro-view :where(a, button, [role='button'], [role='menuitem'], [tabindex]:not([tabindex='-1'])):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px #000;
+}
+
+#retro-view .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+/* Chrome is not selectable, window content is */
+#retro-view .rd-icons,
+#retro-view .rd-taskbar,
+#retro-view .rd-startmenu,
+#retro-view .rd-boot,
+#retro-view .win .titlebar,
+#retro-view .win .menubar,
+#retro-view .win .statusbar {
+  user-select: none;
+}
+#retro-view .win .content {
+  user-select: text;
+}
+
+/* ---- Desktop ------------------------------------------------------------ */
+#retro-view .rd-desktop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: var(--taskbar-h);
+  left: 0;
+  z-index: 0; /* own stacking context: windows can never cover the taskbar */
+  overflow: hidden;
+  background: var(--teal) var(--wallpaper) center / var(--wallpaper-size) no-repeat;
+}
+#retro-view .rd-desktop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: #00000021;
+  pointer-events: none;
+}
+
+/* ---- Desktop icons ------------------------------------------------------ */
+#retro-view .rd-icons {
+  position: absolute;
+  top: 12px;
+  z-index: 2;
+  width: 112px;
+  display: flex;
+  flex-direction: column;
+}
+#retro-view .rd-icons.left {
+  left: 10px;
+  gap: 12px;
+}
+#retro-view .rd-icons.right {
+  right: 10px;
+  align-items: center;
+  gap: 14px;
+}
+#retro-view .dicon {
+  width: 112px;
+  padding: 5px 2px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+  cursor: var(--cursor);
+}
+#retro-view .dicon .img {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#retro-view .dicon .img img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+#retro-view .dicon .lbl {
+  max-width: 110px;
+  padding: 1px 4px;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.18;
+  background: #000000ad;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.55);
+}
+#retro-view .dicon.sel .lbl {
+  background: var(--navy);
+  outline: 1px dotted #fff;
+  outline-offset: -1px;
+  text-shadow: none;
+}
+#retro-view .dicon.sel .img::after {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: var(--navy);
+  mix-blend-mode: multiply;
+  opacity: 0.45;
+}
+
+/* ---- Taskbar ------------------------------------------------------------ */
+#retro-view .rd-taskbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  height: var(--taskbar-h);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 3px;
+  background: var(--face);
+  box-shadow: inset 0 1px 0 var(--hi);
+}
+#retro-view .rd-start {
+  flex: 0 0 auto;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px 0 4px;
+  border: 0;
+  background: var(--face);
+  color: #000;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: var(--cursor);
+}
+#retro-view .rd-start img {
+  width: 18px;
+  height: 15px;
+}
+#retro-view .rd-tasks {
+  flex: 1 1 auto;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  overflow: hidden;
+}
+#retro-view .taskbtn {
+  flex: 0 1 160px;
+  min-width: 150px;
+  max-width: 160px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 6px;
+  overflow: hidden;
+  background: var(--face);
+  font-size: 14px;
+  white-space: nowrap;
+  cursor: var(--cursor);
+}
+#retro-view .taskbtn img {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+#retro-view .taskbtn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* The active button is bold, its title text stays regular */
+#retro-view .taskbtn.active {
+  font-weight: 700;
+}
+#retro-view .taskbtn.active span {
+  font-weight: 400;
+}
+#retro-view .rd-tray {
+  flex: 0 0 auto;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 6px 0 8px;
+  font-size: 15px;
+}
+#retro-view .rd-tray svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---- Start menu --------------------------------------------------------- */
+#retro-view .rd-startmenu {
+  position: absolute;
+  left: 3px;
+  bottom: 36px;
+  z-index: 11;
+  width: 260px;
+  padding: 3px;
+  display: none;
+  background: var(--face);
+}
+#retro-view .rd-startmenu.show {
+  display: flex;
+}
+#retro-view .rd-startmenu .rail {
+  flex: 0 0 auto;
+  width: 34px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  padding-bottom: 8px;
+  background: linear-gradient(180deg, navy, #0a0a4a);
+}
+#retro-view .rd-startmenu .rail span {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+#retro-view .rd-startmenu .rail span b {
+  color: #c0c0c0;
+  font-weight: 400;
+}
+#retro-view .rd-startmenu .items {
+  flex: 1 1 auto;
+  padding: 2px;
+}
+#retro-view .smi {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 6px;
+  font-size: 16px;
+  cursor: var(--cursor);
+}
+#retro-view .smi .ico {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#retro-view .smi .ico img {
+  width: 26px;
+  height: 26px;
+}
+#retro-view .smi .txt {
+  flex: 1 1 auto;
+}
+#retro-view .smi .txt u {
+  text-decoration: underline;
+}
+#retro-view .smi .arr {
+  margin-left: auto;
+  padding-left: 8px;
+  font-size: 13px;
+}
+#retro-view .smi:hover,
+#retro-view .smi:focus {
+  outline: none;
+  background: var(--navy);
+  color: #fff;
+}
+#retro-view .smi.sm-back {
+  font-weight: 700;
+}
+#retro-view .smi.sm-back .ico img {
+  width: 22px;
+  height: 22px;
+}
+#retro-view .sm-sep {
+  height: 0;
+  margin: 3px 2px;
+  border-top: 1px solid var(--sh);
+  border-bottom: 1px solid var(--hi);
+}
+
+/* ---- Windows ------------------------------------------------------------ */
+#retro-view .win {
+  position: absolute;
+  min-width: 180px;
+  min-height: 90px;
+  display: flex;
+  flex-direction: column;
+  padding: 3px;
+  background: var(--face);
+  outline: none;
+}
+#retro-view .win[hidden] {
+  display: none;
+}
+#retro-view .win .titlebar {
+  flex: 0 0 auto;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 2px 0 3px;
+  background: linear-gradient(90deg, var(--navy), var(--navy-grad));
+  touch-action: none;
+}
+#retro-view .win.inactive .titlebar {
+  background: var(--inactive);
+}
+#retro-view .win .ti-icon {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+#retro-view .win .ti-text {
+  flex: 1 1 auto;
+  overflow: hidden;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+#retro-view .win.inactive .ti-text {
+  color: #000;
+}
+#retro-view .win .tbtns {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+#retro-view .tbtn {
+  width: 18px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--face);
+  cursor: var(--cursor);
+}
+#retro-view .tbtn svg {
+  display: block;
+  fill: #000;
+}
+#retro-view .tbtn.close {
+  margin-left: 2px;
+}
+#retro-view .tbtn.raised:active {
+  box-shadow: var(--bevel-pressed);
+}
+
+#retro-view .win .menubar {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 4px;
+  padding: 3px 4px 4px;
+  background: var(--face);
+}
+#retro-view .win .menubar .mi {
+  appearance: none;
+  min-width: 78px;
+  height: 24px;
+  padding: 3px 12px 5px;
+  border: 0;
+  border-radius: 0;
+  background: var(--face);
+  color: #000;
+  font: 400 15px/16px var(--font);
+  text-align: center;
+  white-space: nowrap;
+  cursor: var(--cursor);
+}
+#retro-view .win .menubar .mi u {
+  text-decoration: underline;
+}
+#retro-view .win .menubar .mi-extra {
+  min-width: 136px;
+  margin-left: auto;
+}
+#retro-view .win .menubar .mi.raised:active {
+  padding: 4px 11px 4px 13px;
+  box-shadow: var(--bevel-pressed);
+}
+#retro-view .win .menubar .mi:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -4px;
+}
+
+#retro-view .win .content {
+  position: relative;
+  flex: 1 1 auto;
+  margin-top: 1px;
+  overflow: auto;
+  background: #fff;
+  /* The portfolio hides scrollbars globally; windows bring theirs back */
+  scrollbar-width: auto;
+}
+#retro-view .win .content::-webkit-scrollbar {
+  display: block;
+  width: 16px;
+  height: 16px;
+  background: #dfdfdf;
+}
+#retro-view .win .content::-webkit-scrollbar-thumb {
+  background: var(--face);
+  box-shadow: var(--bevel-raised);
+}
+#retro-view .win .content::-webkit-scrollbar-corner {
+  background: var(--face);
+}
+
+#retro-view .win .statusbar {
+  flex: 0 0 auto;
+  height: 20px;
+  margin-top: 2px;
+  display: flex;
+  gap: 2px;
+}
+#retro-view .win .statusbar .pane {
+  height: 18px;
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  overflow: hidden;
+  background: var(--face);
+  color: #000;
+  font-size: 14px;
+  white-space: nowrap;
+}
+#retro-view .win .statusbar .pane.grow {
+  flex: 1 1 auto;
+}
+#retro-view .win .statusbar .pane.fixed {
+  width: 90px;
+}
+
+#retro-view .win.maxed {
+  left: 0 !important;
+  top: 0 !important;
+}
+#retro-view .win .rsz {
+  position: absolute;
+  z-index: 6;
+  touch-action: none;
+}
+#retro-view .win.maxed .rsz {
+  display: none;
+}
+#retro-view .rsz-n { top: -2px; left: 9px; right: 9px; height: 5px; cursor: ns-resize; }
+#retro-view .rsz-s { bottom: -2px; left: 9px; right: 9px; height: 5px; cursor: ns-resize; }
+#retro-view .rsz-e { right: -2px; top: 9px; bottom: 9px; width: 5px; cursor: ew-resize; }
+#retro-view .rsz-w { left: -2px; top: 9px; bottom: 9px; width: 5px; cursor: ew-resize; }
+#retro-view .rsz-ne { top: -2px; right: -2px; width: 13px; height: 13px; cursor: nesw-resize; }
+#retro-view .rsz-nw { top: -2px; left: -2px; width: 13px; height: 13px; cursor: nwse-resize; }
+#retro-view .rsz-se { bottom: -2px; right: -2px; width: 13px; height: 13px; cursor: nwse-resize; }
+#retro-view .rsz-sw { bottom: -2px; left: -2px; width: 13px; height: 13px; cursor: nesw-resize; }
+
+/* ---- Buttons ------------------------------------------------------------ */
+#retro-view .w95btn {
+  padding: 6px 22px;
+  border: 0;
+  border-radius: 0;
+  background: var(--face);
+  color: #000;
+  font-size: 16px;
+  text-decoration: none;
+  cursor: var(--cursor);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+#retro-view .w95btn.raised:active {
+  padding: 7px 21px 5px 23px;
+  box-shadow: var(--bevel-pressed);
+}
+
+/* ---- Window content: shared ------------------------------------------- */
+#retro-view .empty-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  color: #6f6f6f;
+  font-size: 15px;
+  text-align: center;
+}
+
+/* List rows */
+#retro-view .listview {
+  padding: 5px 4px;
+}
+#retro-view .lv-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 4px 8px;
+  color: #000;
+  font-size: 16px;
+}
+#retro-view .lv-row[role='button'] {
+  cursor: var(--cursor);
+}
+#retro-view .lv-row .ic {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+}
+#retro-view .lv-row .nm {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 0;
+  padding: 1px 3px;
+  line-height: 1.2;
+}
+#retro-view .lv-row.sel .nm {
+  background: var(--navy);
+  color: #fff;
+  outline: 1px dotted #fff;
+  outline-offset: -1px;
+}
+#retro-view .lv-group {
+  display: block;
+  margin: 8px 0 3px;
+  padding: 3px 6px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+#retro-view .lv-time {
+  display: inline-block;
+  min-width: 52px;
+  margin-right: 8px;
+  color: var(--navy);
+}
+#retro-view .lv-row.sel .lv-time,
+#retro-view .lv-row.sel .lv-sub {
+  color: inherit;
+}
+#retro-view .lv-main {
+  font-weight: 700;
+}
+#retro-view .lv-sub {
+  margin-left: 8px;
+  color: #333;
+  font-size: 14px;
+}
+
+/* Explorer tiles (Projects folder) */
+#retro-view .explorer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 130px);
+  justify-content: start;
+  align-content: start;
+  gap: 16px 12px;
+  padding: 16px;
+}
+#retro-view .tile {
+  width: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 4px;
+  text-align: center;
+  cursor: var(--cursor);
+}
+#retro-view .tile img {
+  width: 64px;
+  height: 64px;
+}
+#retro-view .tile .nm {
+  max-width: 122px;
+  padding: 1px 3px;
+  font-size: 14px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+#retro-view .tile.sel .nm {
+  background: var(--navy);
+  color: #fff;
+  outline: 1px dotted #fff;
+  outline-offset: -1px;
+}
+
+/* Detail view */
+#retro-view .bioview {
+  padding: 14px 18px 20px;
+}
+#retro-view .rest-hero {
+  width: 100%;
+  max-height: 220px;
+  margin-bottom: 14px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: #f5f5f5;
+}
+#retro-view .rest-hero img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 196px;
+  object-fit: contain;
+  image-rendering: auto;
+}
+#retro-view .bio-sub {
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+#retro-view .bio-title {
+  margin-bottom: 8px;
+  font-size: 20px;
+  font-weight: 700;
+}
+#retro-view .bio-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 13px;
+}
+#retro-view .bio-tag {
+  padding: 3px 9px 4px;
+  background: var(--navy);
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+#retro-view .bio-tag.featured {
+  background: var(--accent);
+  color: #000;
+}
+#retro-view .bio-body {
+  color: #000;
+  font-size: 15px;
+  line-height: 1.55;
+}
+#retro-view .bio-body p {
+  margin-bottom: 11px;
+}
+#retro-view .bio-body p:last-child {
+  margin-bottom: 0;
+}
+#retro-view .bio-divider {
+  height: 0;
+  margin: 14px 0;
+  border-top: 1px dashed #808080;
+}
+#retro-view .bioview a {
+  color: #0a0a8c;
+  text-decoration: underline;
+}
+#retro-view .bioview a:hover {
+  background: var(--navy);
+  color: #fff;
+}
+#retro-view .bioview a.w95btn,
+#retro-view .bioview a.w95btn:hover {
+  background: var(--face);
+  color: #000;
+  text-decoration: none;
+}
+
+/* Contact window */
+#retro-view .field-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+#retro-view .field {
+  flex: 1 1 200px;
+  min-width: 0;
+  height: 26px;
+  padding: 4px 6px;
+  background: #fff;
+  color: #000;
+  font-size: 15px;
+  line-height: 18px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: all;
+}
+#retro-view .btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* CV window */
+#retro-view .cv-frame {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 8px;
+  gap: 8px;
+  background: var(--face);
+}
+#retro-view .cv-frame .well {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 2px;
+  background: #fff;
+}
+#retro-view .cv-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Terminal.exe */
+#retro-view .win .content.term {
+  padding: 10px 12px;
+  background: #000;
+  color: #0f0;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
+  line-height: 1.35;
+  -webkit-font-smoothing: auto;
+  cursor: text;
+}
+#retro-view .term p {
+  margin-bottom: 0.5rem;
+  overflow-wrap: anywhere;
+}
+#retro-view .term a {
+  color: #0f0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+#retro-view .term a:hover {
+  background: #0f0;
+  color: #000;
+}
+#retro-view .term .term-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#retro-view .term input {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #0f0;
+  font: inherit;
+  caret-color: #0f0;
+}
+#retro-view .term .donut-frame {
+  font-size: clamp(4px, 1.4vw, 9px);
+  line-height: clamp(4px, 1.4vw, 9px);
+}
+
+/* Welcome window */
+#retro-view .welcome {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 28px 22px;
+  background: #fff;
+}
+#retro-view .wl-main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+}
+#retro-view .wl-pic {
+  width: 96px;
+  height: 96px;
+  padding: 4px;
+  background: #fff;
+  object-fit: cover;
+  image-rendering: auto;
+}
+#retro-view .wl-big {
+  font-size: 32px;
+  line-height: 1.2;
+}
+#retro-view .wl-line {
+  min-height: 1.3em;
+  color: var(--navy);
+  font-size: 19px;
+  line-height: 1.3;
+}
+#retro-view .wl-actions {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  padding-top: 18px;
+}
+
+/* ---- Boot screen -------------------------------------------------------- */
+#retro-view .rd-boot {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  color: #fff;
+  transition: opacity 0.6s ease;
+  cursor: var(--cursor);
+}
+#retro-view .rd-boot.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+#retro-view .boot-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  transform: translateY(-4%);
+}
+#retro-view .boot-logo {
+  display: block;
+  width: min(60vw, 520px);
+  height: auto;
+}
+#retro-view .xp-bar {
+  position: relative;
+  width: 210px;
+  height: 24px;
+  overflow: hidden;
+  border: 2px solid #233f7a;
+  border-radius: 13px;
+  box-shadow: inset 0 0 0 1px #0a1530;
+}
+#retro-view .xp-blocks {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  height: 14px;
+  display: flex;
+  gap: 5px;
+  animation: rd-marquee 2.1s linear infinite;
+}
+#retro-view .xp-blocks span {
+  width: 11px;
+  height: 14px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #bfe0ff, #3f8fe6 45%, #0c47a0);
+  box-shadow: inset 0 1px #ffffff99;
+}
+@keyframes rd-marquee {
+  from { left: -46px; }
+  to { left: 216px; }
+}
+#retro-view .boot-copy {
+  position: absolute;
+  left: 26px;
+  bottom: 22px;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ---- Screensaver -------------------------------------------------------- */
+#retro-view .rd-screensaver {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  overflow: hidden;
+  background: #000;
+  cursor: none;
+}
+#retro-view .rd-screensaver svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* ---- <= 900px ----------------------------------------------------------- */
+@media (max-width: 900px) {
+  #retro-view {
+    font-size: 15px;
+  }
+  #retro-view .rd-icons {
+    width: 88px;
+  }
+  #retro-view .rd-icons.left,
+  #retro-view .rd-icons.right {
+    gap: 8px;
+  }
+  #retro-view .dicon {
+    width: 88px;
+    padding: 4px 1px 5px;
+  }
+  #retro-view .dicon .img,
+  #retro-view .dicon .img img,
+  #retro-view .dicon.sel .img::after {
+    width: 62px;
+    height: 62px;
+  }
+  #retro-view .dicon .lbl {
+    max-width: 84px;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+  #retro-view .win {
+    max-width: calc(100vw - 12px);
+    max-height: calc(100dvh - 48px);
+  }
+  #retro-view .win .titlebar {
+    height: 26px;
+  }
+  #retro-view .win .ti-text {
+    font-size: 14px;
+  }
+  #retro-view .tbtn {
+    width: 24px;
+    height: 24px;
+  }
+  #retro-view .bioview {
+    padding: 12px 14px 18px;
+  }
+  #retro-view .bio-body {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  #retro-view .taskbtn {
+    flex-basis: 124px;
+    min-width: 96px;
+    max-width: 124px;
+  }
+  #retro-view .wl-big {
+    font-size: 26px;
+  }
+  #retro-view .wl-line {
+    font-size: 17px;
+  }
+  #retro-view .boot-copy {
+    left: 18px;
+    bottom: 16px;
+    font-size: 13px;
+  }
+}
+
+/* ---- <= 640px (phones): windows pinned full-screen ---------------------- */
+@media (max-width: 640px) {
+  #retro-view {
+    --taskbar-h: 38px;
+  }
+  #retro-view .rd-icons.left {
+    top: 8px;
+    left: 4px;
+    gap: 6px;
+  }
+  #retro-view .rd-icons.right {
+    top: 8px;
+    right: 2px;
+    gap: 7px;
+  }
+  #retro-view .rd-icons,
+  #retro-view .dicon {
+    width: 74px;
+  }
+  #retro-view .dicon {
+    gap: 3px;
+  }
+  #retro-view .dicon .img,
+  #retro-view .dicon .img img,
+  #retro-view .dicon.sel .img::after {
+    width: 50px;
+    height: 50px;
+  }
+  #retro-view .dicon .lbl {
+    max-width: 72px;
+    padding: 1px 2px;
+    font-size: 12px;
+    line-height: 1.1;
+  }
+  #retro-view .rd-taskbar {
+    gap: 3px;
+  }
+  #retro-view .rd-start {
+    height: 30px;
+    padding-right: 7px;
+  }
+  #retro-view .rd-tasks {
+    height: 30px;
+    gap: 2px;
+  }
+  #retro-view .taskbtn {
+    height: 30px;
+    flex-basis: 92px;
+    min-width: 72px;
+    max-width: 92px;
+    padding: 0 4px;
+    font-size: 12px;
+  }
+  #retro-view .rd-tray {
+    height: 30px;
+    gap: 4px;
+    padding: 0 5px;
+    font-size: 13px;
+  }
+  #retro-view .rd-startmenu {
+    left: 4px;
+    right: 4px;
+    bottom: 40px;
+    width: auto;
+    max-height: calc(100dvh - 48px);
+  }
+  #retro-view .rd-startmenu .items {
+    overflow-y: auto;
+  }
+  #retro-view .smi {
+    min-height: 38px;
+    font-size: 15px;
+  }
+  #retro-view .win {
+    left: 4px !important;
+    top: 4px !important;
+    width: calc(100vw - 8px) !important;
+    height: calc(100dvh - 46px) !important;
+    min-width: 0;
+    min-height: 0;
+    max-width: none;
+    max-height: none;
+  }
+  #retro-view .win .rsz {
+    display: none;
+  }
+  #retro-view .win .menubar {
+    overflow-x: auto;
+  }
+  #retro-view .win .menubar .mi {
+    min-width: 74px;
+    height: 26px;
+    padding: 4px 10px 5px;
+    font-size: 13px;
+  }
+  #retro-view .win .menubar .mi-extra {
+    min-width: 0;
+    margin-left: 0;
+  }
+  #retro-view .win .statusbar .pane {
+    font-size: 12px;
+  }
+  #retro-view .lv-row {
+    padding: 6px 7px;
+    font-size: 14px;
+  }
+  #retro-view .explorer {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px 6px;
+    padding: 10px;
+  }
+  #retro-view .tile {
+    width: 100%;
+  }
+  #retro-view .welcome {
+    padding: 18px 16px 16px;
+  }
+  #retro-view .wl-big {
+    font-size: 22px;
+  }
+  #retro-view .wl-line {
+    font-size: 16px;
+  }
+  #retro-view .wl-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  #retro-view .wl-actions .w95btn {
+    width: 100%;
+    padding: 9px 14px;
+  }
+  #retro-view .xp-bar {
+    width: 184px;
+  }
+}
+
+/* ---- Touch -------------------------------------------------------------- */
+@media (hover: none) and (pointer: coarse) {
+  #retro-view {
+    --cursor: auto;
+  }
+  #retro-view .rsz-n,
+  #retro-view .rsz-s {
+    height: 14px;
+  }
+  #retro-view .rsz-n { top: -7px; }
+  #retro-view .rsz-s { bottom: -7px; }
+  #retro-view .rsz-e,
+  #retro-view .rsz-w {
+    width: 14px;
+  }
+  #retro-view .rsz-e { right: -7px; }
+  #retro-view .rsz-w { left: -7px; }
+  #retro-view .rsz-ne,
+  #retro-view .rsz-nw,
+  #retro-view .rsz-se,
+  #retro-view .rsz-sw {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* ---- Reduced motion ----------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  #retro-view .rd-boot {
+    transition: none;
+  }
+  #retro-view .xp-blocks {
+    animation: none;
+    left: 82px;
+  }
+}

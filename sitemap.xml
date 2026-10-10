@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The portfolio is a single page: the minimal, terminal, retro and 3D styles
+  all live at the same address, so there is one URL.
+  Before publishing, replace https://example.com/ with the site's real address
+  (also in robots.txt), and update <lastmod> when the content changes.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://example.com/</loc>
+    <lastmod>2026-10-08</lastmod>
+  </url>
+</urlset>

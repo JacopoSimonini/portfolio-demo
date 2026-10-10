@@ -1,0 +1,702 @@
+/* 3D style: the neon street corner (see neon/neon.js). Everything is scoped to
+   #neon-view and prefixed nv- so it never touches the other styles.
+   Colours come from the site's variables (style.css), so the overlay follows
+   the same green accent, cards and light / dark theme as the other styles. */
+
+#neon-view {
+    --nv-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+    position: fixed;
+    inset: 0;
+    z-index: 1; /* under the dock (z-index 1000) */
+    background: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    animation: fadeIn 0.4s ease-out; /* same fade as the other views (style.css) */
+}
+
+#neon-view[hidden] {
+    display: none;
+}
+
+/* The page behind stays still while the street is shown; the dock stays on top.
+   The scrollbar's room stays reserved, so the page keeps its width and the
+   centred dock doesn't jump sideways while its green thumb slides */
+html:has(> body.neon-active) {
+    scrollbar-gutter: stable;
+}
+
+body.neon-active {
+    padding: 0;
+    height: 100dvh;
+    overflow: hidden;
+    background-color: var(--bg-color);
+}
+
+body.neon-active .minimal-footer {
+    display: none;
+}
+
+.nv-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.nv-canvas {
+    position: absolute;
+    inset: 0;
+}
+
+.nv-canvas canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.nv-canvas.nv-hovering {
+    cursor: pointer;
+}
+
+/* ---------- Title (bottom-left, above the dock) ---------- */
+.nv-hero {
+    position: absolute;
+    left: 28px;
+    bottom: 96px;
+    max-width: 420px;
+    pointer-events: none; /* clicks pass through to the street */
+    transition: opacity 0.4s;
+}
+
+.nv-focused .nv-hero {
+    opacity: 0;
+}
+
+.nv-kicker {
+    color: var(--accent-color);
+    font-family: var(--nv-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+}
+
+.nv-title {
+    margin: 4px 0 0;
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: var(--text-color);
+}
+
+.nv-hint {
+    margin-top: 10px;
+    color: var(--secondary-text);
+    font-size: 0.9rem;
+}
+
+/* ---------- Markers on the objects ---------- */
+.nv-pin {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: -9px 0 0 -9px; /* centre the dot on the anchor point */
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--text-color);
+    font: 600 0.8rem 'IBM Plex Sans', system-ui, sans-serif;
+    cursor: pointer;
+    z-index: 3;
+    transition: opacity 0.3s;
+}
+
+/* Label on the left of the dot: the row is reversed and shifted back by its own
+   width, so the dot (now at the right end) still sits on the anchor point */
+.nv-pin-left {
+    flex-direction: row-reverse;
+    margin: -9px 0 0 9px;
+    translate: -100% 0;
+}
+
+.nv-pins-hidden .nv-pin {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.nv-pin[hidden] {
+    display: none;
+}
+
+.nv-pin-dot {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 25%, transparent);
+}
+
+.nv-pin-dot::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border: 2px solid var(--accent-color);
+    border-radius: 50%;
+    animation: nv-ping 1.8s ease-out infinite;
+}
+
+@keyframes nv-ping {
+    from { transform: scale(0.6); opacity: 1; }
+    to   { transform: scale(1.6); opacity: 0; }
+}
+
+.nv-pin-label {
+    padding: 5px 12px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+    white-space: nowrap;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.nv-pin:hover .nv-pin-label,
+.nv-pin.nv-active .nv-pin-label {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.nv-pin:focus-visible {
+    outline: none;
+}
+
+.nv-pin:focus-visible .nv-pin-label {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* ---------- Markers on the items of a close-up (see startGuide) ---------- */
+.nv-mark {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: grid;
+    place-items: center;
+    width: 32px; /* a comfortable tap target; the dot itself is small */
+    height: 32px;
+    margin: -28px 0 0 -16px; /* centred, just above the item's top */
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    z-index: 3;
+    animation: nv-mark-in 0.25s ease;
+}
+
+.nv-mark[hidden] {
+    display: none;
+}
+
+.nv-mark-dot {
+    position: relative;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    /* a dark ring and shadow, so the dot also stands out on light parts of the scene
+       (the vending machine's lit panel, the About window) */
+    box-shadow:
+        0 0 0 2px rgba(8, 10, 6, 0.85),
+        0 1px 6px 2px rgba(0, 0, 0, 0.55),
+        0 0 12px var(--accent-color);
+}
+
+.nv-mark-dot::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border: 2px solid var(--accent-color);
+    border-radius: 50%;
+    /* dark edges on both sides of the ping ring, for the same reason */
+    box-shadow: 0 0 0 1px rgba(8, 10, 6, 0.6), inset 0 0 0 1px rgba(8, 10, 6, 0.6);
+    animation: nv-ping 1.8s ease-out infinite;
+}
+
+.nv-mark:hover .nv-mark-dot {
+    scale: 1.25;
+}
+
+@keyframes nv-mark-in {
+    from { opacity: 0; }
+}
+
+/* ---------- Card shown in a close-up (like the minimal view's cards) ---------- */
+.nv-card {
+    position: absolute;
+    left: 28px;
+    bottom: 96px; /* clear of the dock */
+    z-index: 4;
+    width: min(380px, calc(100% - 56px));
+    max-height: calc(100% - 140px);
+    overflow-y: auto;
+    padding: 18px 20px 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow), 0 12px 32px rgba(0, 0, 0, 0.25);
+    animation: nv-rise 0.4s ease;
+}
+
+.nv-card[hidden] {
+    display: none;
+}
+
+@keyframes nv-rise {
+    from { opacity: 0; transform: translateY(12px); }
+}
+
+.nv-card h2 {
+    margin: 2px 0 8px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.nv-card p {
+    color: var(--secondary-text);
+    line-height: 1.6;
+}
+
+.nv-card a {
+    color: var(--text-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.nv-card a:hover {
+    color: var(--accent-color);
+}
+
+/* Back: the site's secondary pill button */
+.nv-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    height: 2.25rem;
+    padding: 0 1rem;
+    border: none;
+    border-radius: 999px;
+    background-color: var(--fill);
+    color: var(--text-color);
+    font: 600 0.875rem 'IBM Plex Sans', system-ui, sans-serif;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.nv-back span {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.nv-back:hover {
+    background-color: color-mix(in srgb, var(--fill) 82%, var(--text-color));
+}
+
+.nv-back:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.nv-chips {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+}
+
+/* slot number of a drink / book (the bar matches its colour) */
+.nv-slot {
+    flex: none;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: var(--fill);
+    border-bottom: 3px solid var(--c);
+    color: var(--text-color);
+    font: 600 0.75rem var(--nv-mono);
+}
+
+/* the chalkboard: skills as the site's skill tags */
+.nv-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.nv-chips li {
+    padding: 6px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text-color);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Download CV: the site's primary pill button */
+.nv-button {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 14px;
+    height: 2.5rem;
+    padding: 0 1.25rem;
+    border-radius: 999px;
+    background-color: var(--accent-color);
+    color: var(--accent-ink) !important;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.nv-button:hover {
+    background-color: color-mix(in srgb, var(--accent-color) 82%, var(--text-color));
+}
+
+/* ---------- Close-up card: a hint and the items as buttons ---------- */
+.nv-hint-text {
+    margin-bottom: 4px;
+}
+
+.nv-picks {
+    list-style: none;
+    margin: 12px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 6px;
+}
+
+.nv-picks-grid {
+    grid-template-columns: 1fr 1fr;
+}
+
+.nv-pick {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text-color);
+    font: 600 0.82rem 'IBM Plex Sans', system-ui, sans-serif;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.nv-pick span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nv-pick:hover:not(:disabled),
+.nv-pick:focus-visible {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    outline: none;
+}
+
+.nv-pick:disabled {
+    color: var(--secondary-text);
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* Name of the item under the mouse in a close-up */
+.nv-tip {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 5;
+    padding: 4px 10px;
+    border: 1px solid var(--accent-color);
+    border-radius: 999px;
+    background: var(--card-bg);
+    color: var(--text-color);
+    font: 600 0.78rem 'IBM Plex Sans', system-ui, sans-serif;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: var(--shadow);
+}
+
+.nv-tip[hidden] {
+    display: none;
+}
+
+/* A sold-out drink: greyed out like the bottle */
+.nv-tip-off {
+    border-color: var(--border-color);
+    color: var(--secondary-text);
+}
+
+/* ---------- Pop-up with the details, over the dimmed street ---------- */
+.nv-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    display: grid;
+    place-items: center;
+    padding: 24px 16px 96px; /* clear of the dock */
+    background: color-mix(in srgb, var(--bg-color) 55%, transparent);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    animation: fadeIn 0.25s ease-out;
+}
+
+.nv-overlay[hidden] {
+    display: none;
+}
+
+.nv-ov-card {
+    position: relative;
+    width: min(460px, 100%);
+    max-height: 100%;
+    overflow-y: auto;
+    padding: 22px 24px 24px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-top: 3px solid var(--accent-color);
+    border-radius: 14px;
+    box-shadow: var(--shadow), 0 24px 60px rgba(0, 0, 0, 0.35);
+    animation: nv-pop 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+@keyframes nv-pop {
+    from { opacity: 0; transform: translateY(10px) scale(0.96); }
+}
+
+.nv-ov-card h2 {
+    margin: 2px 40px 10px 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text-color);
+}
+
+.nv-ov-card p {
+    margin: 0 0 10px;
+    color: var(--secondary-text);
+    line-height: 1.6;
+}
+
+.nv-ov-card .nv-chips {
+    margin: 0 0 12px;
+}
+
+.nv-ov-lead {
+    color: var(--text-color) !important;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+/* About me: photo next to the role */
+.nv-ov-about {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+}
+
+.nv-ov-about .nv-ov-lead {
+    margin: 0;
+}
+
+.nv-ov-photo {
+    flex: none;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--accent-color);
+}
+
+.nv-ov-when {
+    font: 0.8rem var(--nv-mono);
+}
+
+.nv-ov-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: var(--fill);
+    color: var(--text-color);
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.nv-ov-close:hover {
+    background: color-mix(in srgb, var(--fill) 82%, var(--text-color));
+}
+
+.nv-ov-close:focus-visible,
+.nv-button:focus-visible,
+.nv-ghost:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.nv-ov-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+.nv-ov-actions .nv-button {
+    margin-top: 0;
+}
+
+.nv-ghost {
+    display: inline-flex;
+    align-items: center;
+    height: 2.5rem;
+    padding: 0 1.25rem;
+    border: none;
+    border-radius: 999px;
+    background-color: var(--fill);
+    color: var(--text-color) !important;
+    font: 600 0.9rem 'IBM Plex Sans', system-ui, sans-serif;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+.nv-ghost:hover {
+    background-color: color-mix(in srgb, var(--fill) 82%, var(--text-color));
+}
+
+/* The close-up card steps back while the pop-up is open */
+.nv-overlay-open .nv-card {
+    opacity: 0.35;
+    pointer-events: none;
+}
+
+/* ---------- Loader ---------- */
+.nv-loader {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: grid;
+    place-content: center;
+    gap: 14px;
+    text-align: center;
+    background: var(--bg-color);
+    color: var(--secondary-text);
+    font: 0.8rem var(--nv-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: opacity 0.8s ease;
+}
+
+.nv-loader.nv-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.nv-bar {
+    width: 220px;
+    height: 3px;
+    margin: 0 auto;
+    border-radius: 3px;
+    background: var(--border-color);
+    overflow: hidden;
+}
+
+.nv-bar span {
+    display: block;
+    width: 40%;
+    height: 100%;
+    background: var(--accent-color);
+    animation: nv-slide 1.2s ease-in-out infinite;
+}
+
+.nv-bar span.nv-determinate {
+    width: 0;
+    animation: none;
+    transition: width 0.2s ease;
+}
+
+@keyframes nv-slide {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(250%); }
+}
+
+.nv-dots::after {
+    content: '';
+    animation: nv-dots 1.5s steps(4) infinite;
+}
+
+@keyframes nv-dots {
+    0%  { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+}
+
+/* ---------- Phones ---------- */
+@media (max-width: 600px) {
+    .nv-hero {
+        left: 16px;
+        right: 16px;
+        bottom: 88px;
+    }
+
+    .nv-card {
+        left: 12px;
+        right: 12px;
+        bottom: 84px;
+        width: auto;
+        max-height: calc(100% - 120px);
+    }
+
+    .nv-pin-label {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+    }
+
+    .nv-picks-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nv-overlay {
+        align-items: end;
+        padding: 12px 12px 84px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #neon-view,
+    .nv-card,
+    .nv-overlay,
+    .nv-ov-card {
+        animation: none;
+    }
+
+    .nv-pin-dot::after,
+    .nv-mark,
+    .nv-mark-dot::after,
+    .nv-bar span,
+    .nv-dots::after {
+        animation: none;
+    }
+}

@@ -1,0 +1,1994 @@
+/* JetBrains Mono - SIL Open Font License 1.1 (see fonts/), used by the terminal view */
+@font-face {
+    font-family: 'JetBrains Mono';
+    src: url('fonts/jetbrains-mono-latin.woff2') format('woff2');
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+:root {
+    /* Light Mode Variables */
+    --bg-color: #f8f9fa;
+    --text-color: #212529;
+    --accent-color: #228b22;
+    --secondary-text: #6c757d;
+    --card-bg: #ffffff;
+    --border-color: #dee2e6;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --fill: #e9ecef;         /* quiet button background */
+    --accent-ink: #ffffff;   /* text on the accent color */
+}
+
+body.classic-dark {
+    /* Dark Mode Variables */
+    --bg-color: #0f1113;
+    --text-color: #e9ecef;
+    --accent-color: #adff2f;
+    --secondary-text: #adb5bd;
+    --card-bg: #1a1d20;
+    --border-color: #2c3036;
+    --fill: #262b2f;
+    --accent-ink: #000000;
+}
+
+/* Terminal view colours. Surfaces and the prompt green follow the variables
+   above (the light green is darkened a little so it stays readable on white);
+   the other syntax colours are fixed. All pass WCAG AA. Declared on body so
+   they follow the dark mode. */
+body {
+    --font-term: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+    --t-bg: var(--bg-color);
+    --t-panel: var(--card-bg);
+    --t-fg: var(--text-color);
+    --t-dim: #5c636a;
+    --t-line: var(--border-color);
+    --t-grn: color-mix(in srgb, var(--accent-color) 85%, #000);
+    --t-cyn: #176f77;
+    --t-yel: #7d5f0d;
+    --t-mag: #8b3f8b;
+    --t-red: #b3261e;
+}
+
+body.classic-dark {
+    --t-dim: var(--secondary-text);
+    --t-grn: var(--accent-color);
+    --t-cyn: #56d4dd;
+    --t-yel: #e3c46a;
+    --t-mag: #d98fd9;
+    --t-red: #ff6b6b;
+}
+
+html {
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #c9cfd4 transparent;
+}
+
+html:has(> body.classic-dark) {
+    scrollbar-color: #3a3f44 transparent;
+}
+
+#contact {
+    scroll-margin-top: 80px;
+}
+
+/* General Reset & Minimal Setup */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    color: #333;
+    background-color: #f9f9f9;
+    /*padding: 2rem;*/
+    padding: 2rem 2rem 6rem 2rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.3s ease;
+}
+
+/* --- Floating Translucent Dock --- */
+.nav-container {
+    position: fixed; /* Locks it to the screen */
+    bottom: 20px; /* 20px from the bottom edge */
+    left: 50%; /* Pushes it to the center */
+    transform: translateX(-50%); /* Perfectly centers it algebraically */
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px; /* Replaces margin-right on the buttons to space them evenly */
+    
+    padding: 5px 7px; /* Padding inside the dock */
+    border-radius: 50px; /* Gives the dock a pill shape */
+    z-index: 1000; /* Ensures the dock stays on top of all other text/images */
+
+    /* The Translucent Frosted Glass Effect (Light Mode Default) */
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px); /* Safari support */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft drop shadow */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle highlight border */
+}
+
+/* --- Style Switch: [ Minimal | >_ | Retro | 3D ] --- */
+.style-switch {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 50px; /* Pill, like the rest of the dock */
+    background-color: #fff;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2); /* Thin border */
+}
+
+.style-opt {
+    border: none;
+    /* Fixed width: the label's length in characters x 0.6em (every
+       JetBrains Mono character is 0.6em wide, wider than the sans fonts)
+       plus the side padding. The dock keeps one size in every style,
+       even though the terminal shows it in the monospace font. */
+    --opt-pad: 14px;
+    width: calc(var(--opt-chars) * 0.6em + 2 * var(--opt-pad));
+    padding: 9px var(--opt-pad);
+    text-align: center;
+    border-radius: 50px;
+    background-color: transparent;
+    color: #333;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: bold;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.style-opt[data-view="classic"] { --opt-chars: 7; }   /* Minimal */
+.style-opt[data-view="terminal"] { --opt-chars: 2; }  /* >_ */
+.style-opt[data-view="retro"] { --opt-chars: 5; }     /* Retro */
+.style-opt[data-view="neon"] { --opt-chars: 2; }      /* 街 (machi, "street"): one ~1em wide character; 3D view in neon/neon.css */
+
+.style-opt:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+/* The active style is highlighted */
+.style-opt[aria-pressed="true"] {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+
+.style-opt:focus-visible,
+.theme-btn:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Sliding highlight: one green thumb behind the buttons slides to the chosen
+   style. script.js sets --thumb-x / --thumb-w and adds .has-thumb; without
+   JavaScript the active button keeps its own green background (above). */
+.style-switch {
+    position: relative;
+}
+
+.style-switch.has-thumb::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 0;
+    width: var(--thumb-w);
+    transform: translateX(var(--thumb-x));
+    border-radius: 50px;
+    background-color: var(--accent-color);
+}
+
+/* Added one frame after the first placement, so the thumb never slides in on page load */
+.style-switch.thumb-animate::before {
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.style-switch.has-thumb .style-opt {
+    position: relative; /* above the thumb */
+    z-index: 1;
+}
+
+.style-switch.has-thumb .style-opt[aria-pressed="true"] {
+    background-color: transparent; /* the thumb shows through */
+}
+
+/* Retro style: it has its own taskbar, so the dock and footer step aside */
+body.retro-active {
+    padding: 0;
+    height: 100dvh;
+    overflow: hidden;
+}
+
+body.retro-active .nav-container,
+body.retro-active .minimal-footer {
+    display: none;
+}
+
+
+/* --- Theme Toggle Button --- */
+.theme-btn {
+    background-color: #fff;
+    color: #333;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2); /* Thin border */
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%; /* Perfect circle */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.theme-btn:hover {
+    background-color: var(--accent-color);
+}
+
+.theme-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.hidden-icon {
+    display: none;
+}
+
+
+/* --- Classic View Dark Mode Overrides --- */
+body.classic-dark {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+/* Lighten the text for headings and bold words */
+body.classic-dark #classic-view h1,
+body.classic-dark .content-section h2,
+body.classic-dark .clean-list li strong,
+body.classic-dark .info-box h3 {
+    color: #ffffff;
+}
+
+/* Subtitles and paragraph text */
+body.classic-dark .content-section p,
+body.classic-dark .clean-list li {
+    color: #b0b0b0;
+}
+
+/* Lines and icons */
+body.classic-dark .content-section h2 {
+    border-bottom: 1px solid #333;
+}
+body.classic-dark .section-icon {
+    color: greenyellow;
+}
+
+/* Dark Mode Translucent Dock */
+body.classic-dark .nav-container {
+    background: rgba(0, 0, 0, 0.5); /* Dark see-through background */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Stronger shadow for dark mode */
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Faint white border for contrast */
+}
+
+/* Skills and Project tags (MODIFIED) */
+.skill-tag, .skill-tag1 {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: var(--transition);
+    box-shadow: var(--shadow);
+}
+
+.skill-tag:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+/* Info Box */
+body.classic-dark .info-box {
+    background-color: #1e1e1e;
+    border-left: 4px solid #555;
+}
+
+/* Classic view links */
+body.classic-dark #classic-view a:not(.btn):not(.contact-link) {
+    color: #f1f1f1; 
+    font-weight: bold;
+}
+
+body.classic-dark #classic-view a:not(.btn):not(.contact-link):hover {
+    color: greenyellow;
+}
+
+body.classic-dark .github-link {
+    color: #fff !important; 
+    font-weight: bold;
+}
+
+body.classic-dark .github-link:hover {
+    color: greenyellow !important;
+}
+
+body.classic-dark .theme-btn{
+    color: #fff;
+    background-color: #000;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+body.classic-dark .theme-btn:hover{
+   
+    background-color: greenyellow;
+}
+
+/* Dark mode switch (minimal and terminal): black pill, neon-green active style */
+body.classic-dark .style-switch {
+    background-color: #000;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+body.classic-dark .style-opt {
+    color: #fff;
+}
+
+body.classic-dark .style-opt:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+}
+
+body.classic-dark .style-opt[aria-pressed="true"] {
+    background-color: greenyellow;
+    color: #000;
+}
+
+
+
+
+
+/* View Visibility Logic */
+.view {
+    display: none;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.view.active {
+    display: block;
+}
+
+
+
+
+
+
+
+/**************************/
+/* Classic View Specifics */
+#classic-view h2 { margin-top: 2rem; margin-bottom: 0.5rem; }
+#classic-view ul { margin-left: 1.5rem; }
+
+/* --- Classic View Styling --- */
+
+/* 3. Ensure your classic view doesn't have a duplicate animation rule */
+#classic-view {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+/* Content Sections */
+.content-section {
+    margin-bottom: 2.5rem;
+}
+
+.content-section h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #ddd; /* Clean separator line */
+    padding-bottom: 0.5rem;
+    color: #222;
+}
+
+.content-section p {
+    line-height: 1.7;
+    color: #444;
+}
+
+/* Skills Grid */
+.skills-grid {
+    display: flex;
+    flex-wrap: wrap; /* Allows skills to wrap to the next line on small screens */
+    gap: 12px;
+}
+
+/* Simple Fade-In Animation */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+/* Page-load entrance, the same as the terminal's: the header, each section
+   and the footer fade in and slide up 8px, one after the other (140ms apart).
+   Pure CSS, so nothing flashes before it starts, and it replays whenever the
+   minimal view is shown again. Reduced motion turns it off (see the end). */
+@keyframes reveal {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
+
+#classic-view > .hero,
+#classic-view > .content-section,
+.minimal-footer {
+    animation: reveal 0.5s backwards; /* hidden during the delay, then back to normal styles */
+}
+
+#classic-view > :nth-child(1) { animation-delay: 80ms; }
+#classic-view > :nth-child(2) { animation-delay: 220ms; }
+#classic-view > :nth-child(3) { animation-delay: 360ms; }
+#classic-view > :nth-child(4) { animation-delay: 500ms; }
+#classic-view > :nth-child(5) { animation-delay: 640ms; }
+#classic-view > :nth-child(6) { animation-delay: 780ms; }
+#classic-view > :nth-child(7) { animation-delay: 920ms; }
+#classic-view > :nth-child(n + 8) { animation-delay: 1060ms; } /* add a step here if you add sections */
+.minimal-footer { animation-delay: 1060ms; }
+
+/* --- Header: picture and text share one height --- */
+.hero {
+    display: flex;
+    align-items: center;
+    gap: 2.25rem;
+    margin-bottom: 3rem;
+}
+
+.profile-pic {
+    flex: none;
+    width: 184px;
+    height: 184px;
+    border-radius: 28px;
+    object-fit: cover;
+    background-color: var(--fill);
+    border: 1px solid var(--border-color);
+}
+
+.hero-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 184px; /* same height as the picture; grows rather than clipping */
+    min-width: 0;
+}
+
+.hero h1 {
+    font-size: clamp(2.25rem, 5.5vw, 3.25rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    color: #111;
+}
+
+.hero-role {
+    margin-top: 0.625rem;
+    font-size: 1.0625rem;
+    color: var(--secondary-text);
+}
+
+/* The typing line reads as a shell prompt: a quiet link to the terminal style */
+.subtitle {
+    margin-top: 0.375rem;
+    min-height: 1.6em;
+    min-width: var(--typewriter-width, auto); /* room for the longest phrase, set by script.js */
+    font-family: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.prompt-sign {
+    color: var(--accent-color);
+    margin-right: 1ch;
+}
+
+.cursor1 {
+    display: inline-block;
+    width: 0.55em;
+    height: 1.1em;
+    margin-left: 2px;
+    vertical-align: -0.2em;
+    background-color: var(--accent-color);
+    animation: blink 1s step-end infinite;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    margin-top: 1.375rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 2.75rem;
+    padding: 0 1.25rem;
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.btn-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    color: var(--accent-ink);
+}
+
+.btn-primary:hover {
+    background-color: color-mix(in srgb, var(--accent-color) 82%, var(--text-color));
+}
+
+.btn-secondary {
+    background-color: var(--fill);
+    color: var(--text-color);
+}
+
+.btn-secondary:hover {
+    background-color: color-mix(in srgb, var(--fill) 82%, var(--text-color));
+}
+
+/* --- Section Icons --- */
+.content-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between icon and text */
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
+    color: #222;
+}
+
+.section-icon {
+    width: 24px;
+    height: 24px;
+    color: green;
+}
+
+/* --- Clean Lists for Education & Projects --- */
+.clean-list {
+    list-style-type: none; /* Removes default bullets */
+    padding: 0;
+}
+
+.clean-list li {
+    position: relative; /* NEW: Allows us to lock the triangle to the left edge */
+    padding-left: 1.5rem; /* NEW: Pushes the text over to make room for the triangle */
+    margin-bottom: 0.8rem;
+    line-height: 1.6;
+    color: #444;
+}
+
+/* NEW: The Hollow Triangle Bullet */
+.clean-list li::before {
+    content: "▷"; /* The hollow triangle character */
+    position: absolute;
+    left: 0;
+    top: 1px; /* Tweaks vertical alignment so it perfectly centers with the text */
+    color: green; /* Dark grey for Light Mode */
+    font-size: 1rem;
+    font-family: 'Courier New', Courier, monospace; /* Keeps it looking like a terminal */
+    font-weight: bold;
+}
+
+/* Turns the list triangles neon green in Dark Mode */
+body.classic-dark .clean-list li::before {
+    color: greenyellow;
+}
+
+.clean-list li strong {
+    color: #111;
+}
+
+/* Stack projects as full-width clickable rows */
+#projects-grid {
+    flex-direction: column;
+}
+
+/* The open project and its details panel read as one unit */
+#project-info-box {
+    margin-top: -12px; /* cancels the list gap so the panel joins its row */
+    border: 1px solid var(--accent-color);
+    border-left: 3px solid var(--accent-color) !important;
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+}
+
+/* --- Projects Grid Interactive Styling (MODIFIED) --- */
+.project-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-color);
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+/* Title + tagline stacked inside each project row */
+.project-btn-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-align: left;
+}
+
+.project-title {
+    font-weight: 600;
+}
+
+.project-tagline {
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--secondary-text);
+}
+
+/* Explicit "Details" cue that signals the tag is clickable */
+.project-btn::after {
+    content: "Details →";
+    margin-left: auto;
+    padding-left: 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    opacity: 0.85;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.project-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.project-btn:hover::after {
+    transform: translateX(4px);
+    opacity: 1;
+}
+
+/* Flip the cue while a project is open */
+.project-btn.active-project::after {
+    content: "Close ⌄";
+    opacity: 1;
+    transform: none; /* the cue stays put on hover while open */
+}
+
+/* Selected project: subtle tint + accent border instead of a solid fill */
+.project-btn.active-project {
+    background-color: color-mix(in srgb, var(--accent-color) 12%, var(--card-bg));
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+    border-bottom: 1px solid var(--border-color); /* thin divider above the details panel */
+    border-radius: 10px 10px 0 0;
+    transform: none; /* an open project stays attached to its details: no hover lift */
+}
+
+/* --- Featured projects: two cards with the overview always visible --- */
+.featured-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.project-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px 18px 16px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.project-eyebrow {
+    font-family: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-color);
+}
+
+.project-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--text-color);
+}
+
+#classic-view .project-card p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--secondary-text);
+}
+
+/* "Read more" swaps the short summary for the full description */
+.project-full,
+.project-card.expanded .project-summary {
+    display: none;
+}
+
+.project-card.expanded .project-full {
+    display: block;
+}
+
+#classic-view .project-tags {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.project-tags li {
+    font-family: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 5px;
+    background-color: var(--fill);
+    color: var(--text-color);
+}
+
+/* Footer pinned to the bottom so both cards line up */
+.project-card-foot {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+}
+
+.read-more {
+    padding: 0;
+    background: none;
+    border: 0;
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent-color);
+    cursor: pointer;
+}
+
+.read-more:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.project-card .github-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.9rem;
+}
+
+.project-card .github-link svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* "More projects" label with a rule running to the right */
+.projects-subhead {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 1.75rem 0 0.75rem;
+    font-family: 'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--secondary-text);
+}
+
+.projects-subhead::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: var(--border-color);
+}
+
+@media (max-width: 640px) {
+    .featured-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* The Details Rectangle */
+.info-box {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent-color) !important; /* A nice accent line */
+    display: none; /* Keeps it entirely out of the layout flow until clicked */
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Toggling this class forces the layout to push down */
+.info-box.visible {
+    display: block; 
+}
+
+.info-box h3 {
+    margin-bottom: 0.5rem;
+    color: #111;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.info-box p {
+    margin-bottom: 1rem;
+    color: #444;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+}
+
+/* Optional: Style the links in the classic view so they look clean too */
+#classic-view a:not(.btn):not(.contact-link) {
+    color: #1a1a1a;
+    font-weight: bold;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+#classic-view a:not(.btn):not(.contact-link):hover {
+    color: green;
+}
+
+.github-link:hover {
+    color: green !important;
+}
+
+
+/* --- Education: years aligned on the right --- */
+.edu-list {
+    list-style: none;
+}
+
+/* Each entry is a row with a thin line underneath, like Contact and Languages */
+.edu-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+        "title when"
+        "meta  when";
+    column-gap: 1.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.edu-title {
+    grid-area: title;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.edu-meta {
+    grid-area: meta;
+    font-size: 0.9375rem;
+    color: var(--secondary-text);
+}
+
+.edu-level::after {
+    content: ",\00a0";
+}
+
+.edu-when {
+    grid-area: when;
+    font-size: 0.9375rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--secondary-text);
+    text-align: right;
+}
+
+/* The degree in progress is the current one */
+.edu-item:first-child .edu-when {
+    color: var(--accent-color);
+    font-weight: 500;
+}
+
+/* --- Languages: same rows as Contact (grey label, value next to it) --- */
+#classic-view .lang-list {
+    list-style: none;
+    margin-left: 0;
+}
+
+.lang-item {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    align-items: center;
+    column-gap: 1rem;
+    min-height: 3.25rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.lang-name {
+    font-size: 0.9375rem;
+    font-weight: 400;
+    color: var(--secondary-text);
+}
+
+.lang-level {
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+/* Hidden on the page only; the terminal still shows "Italian: Native" */
+#languages-data .lang-colon {
+    display: none;
+}
+
+/* --- Contact: show the details instead of hiding them behind a click --- */
+#classic-view .contact-list {
+    list-style: none;
+    margin-left: 0;
+}
+
+.contact-row {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 1rem;
+    min-height: 3.25rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.contact-label {
+    font-size: 0.9375rem;
+    color: var(--secondary-text);
+}
+
+.contact-link {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-weight: 500;
+    color: var(--text-color);
+    text-decoration: underline;
+    text-decoration-color: var(--border-color);
+    text-underline-offset: 4px;
+    transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+.contact-link:hover {
+    color: var(--accent-color);
+    text-decoration-color: currentColor;
+}
+
+.contact-link svg {
+    width: 15px;
+    height: 15px;
+    flex: none;
+}
+
+.copy-btn {
+    padding: 0.375rem 0.875rem;
+    border: none;
+    border-radius: 999px;
+    background-color: var(--fill);
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.copy-btn:hover {
+    background-color: color-mix(in srgb, var(--fill) 82%, var(--text-color));
+}
+
+.copy-btn.is-copied {
+    background-color: var(--accent-color);
+    color: var(--accent-ink);
+}
+
+/* --- Phones: header, education and contact --- */
+@media (max-width: 600px) {
+    .hero {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+    }
+
+    .profile-pic {
+        width: 112px;
+        height: 112px;
+        border-radius: 22px;
+    }
+
+    .hero-text {
+        min-height: 0;
+    }
+
+    .subtitle {
+        min-width: 0;
+    }
+
+    .contact-row {
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas:
+            "label label"
+            "link  action";
+        row-gap: 0.125rem;
+        padding: 0.75rem 0;
+    }
+
+    .contact-label { grid-area: label; font-size: 0.8125rem; }
+    .contact-link  { grid-area: link; }
+    .copy-btn      { grid-area: action; }
+
+    /* Languages stack the same way as the contact rows */
+    .lang-item {
+        grid-template-columns: minmax(0, 1fr);
+        row-gap: 0.125rem;
+        padding: 0.75rem 0;
+    }
+
+    .lang-name {
+        font-size: 0.8125rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .hero-actions .btn {
+        flex: 1 1 100%;
+    }
+}
+
+/* --- Minimal Footer --- */
+.minimal-footer {
+    text-align: center;
+    margin-top: 4rem;
+    margin-bottom: 2rem; /* Keeps it safely above the floating dock */
+    font-size: 0.8125rem;
+    color: #888;
+}
+
+body.classic-dark .minimal-footer {
+    color: #8a8a8a; /* Dimmed, but still readable */
+}
+/**************************/
+
+
+
+
+
+
+
+
+
+
+/**************************/
+/* Terminal View Specifics */
+
+/* Both views fade in when they open */
+.view.active {
+    display: block;
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* Hide the footer entirely when in Terminal Mode */
+body.terminal-active .minimal-footer {
+    display: none;
+}
+
+/* ==========================================================================
+   3. Terminal view: a terminal window on a desk, light or dark with the theme.
+   Every section is the output of a shell command; the shell at the bottom
+   is interactive.
+   ========================================================================== */
+body.terminal-active {
+    padding: 0;
+    background-color: var(--t-bg);
+    color: var(--t-fg);
+}
+
+/* Switching light/dark in the terminal: everything changes in the same frame
+   (no fades), so the background never lags behind the window */
+body.terminal-active.theme-switching,
+body.terminal-active.theme-switching *,
+body.terminal-active.theme-switching *::before,
+body.terminal-active.theme-switching *::after {
+    transition: none !important;
+}
+
+/* Faint scanlines and a vignette over the whole terminal page */
+body.terminal-active::before,
+body.terminal-active::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+}
+
+body.terminal-active::before {
+    z-index: 50;
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.14) 0 1px, transparent 1px 3px);
+    opacity: 0.05;
+    mix-blend-mode: multiply;
+}
+
+body.terminal-active::after {
+    z-index: 49;
+    box-shadow: inset 0 0 160px rgba(0, 0, 0, 0.06);
+}
+
+body.classic-dark.terminal-active::before {
+    background: repeating-linear-gradient(0deg, color-mix(in srgb, var(--t-grn) 13%, transparent) 0 1px, transparent 1px 3px);
+    opacity: 0.09;
+    mix-blend-mode: normal;
+}
+
+body.classic-dark.terminal-active::after {
+    box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.65);
+}
+
+/* Room at the bottom so the dock never covers the shell */
+#terminal-view {
+    max-width: none; /* the minimal view's 600px column does not apply here */
+    margin: 0;
+    padding: 34px 16px 120px;
+}
+
+/* ---- Window ---------------------------------------------------------- */
+.tw {
+    max-width: 900px;
+    margin: 0 auto;
+    overflow: clip; /* rounds the corners without breaking the sticky title bar */
+    border: 1px solid var(--t-line);
+    border-radius: 10px;
+    background: var(--t-panel);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+    color: var(--t-fg);
+    font-family: var(--font-term);
+    font-size: 14.5px;
+    line-height: 1.75;
+    font-variant-ligatures: none;
+}
+
+body.classic-dark .tw {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.tw a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.tw :focus-visible {
+    outline: 2px solid var(--t-grn);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.tw-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--t-line);
+    background: var(--t-panel);
+}
+
+.tl {
+    width: 12px;
+    height: 12px;
+    flex: none;
+    border-radius: 50%;
+}
+
+.tl-r { background: #ff5f56; }
+.tl-y { background: #ffbd2e; }
+.tl-g { background: #27c93f; }
+
+.tw-path {
+    margin-left: 10px;
+    color: var(--t-dim);
+    font-size: 12.5px;
+}
+
+.tw-clock {
+    margin-left: auto;
+    color: var(--t-grn);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.tw-body {
+    padding: 26px clamp(18px, 4vw, 40px) 40px;
+}
+
+/* Syntax colours */
+.t-grn { color: var(--t-grn); }
+.t-cyn { color: var(--t-cyn); }
+.t-yel { color: var(--t-yel); }
+.t-mag { color: var(--t-mag); }
+.t-red { color: var(--t-red); }
+.t-dim { color: var(--t-dim); }
+
+/* ---- Command blocks -------------------------------------------------- */
+/* Each section fades in on entry, one after the other */
+.t-blk {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s, transform 0.5s;
+}
+
+.t-blk.in {
+    opacity: 1;
+    transform: none;
+}
+
+.t-cmd {
+    color: var(--t-dim);
+    font-size: inherit;
+    font-weight: 400;
+}
+
+.t-cmd::before {
+    content: '➜ ';
+    color: var(--t-grn);
+}
+
+.t-cmd b {
+    color: var(--t-cyn);
+    font-weight: 500;
+}
+
+.t-flag {
+    color: var(--t-yel);
+}
+
+.t-out {
+    margin: 8px 0 30px;
+    padding-left: 2px;
+}
+
+/* Markdown-style sub-heading: "## projects · 4 entries" */
+.t-h {
+    margin: 34px 0 6px;
+    color: var(--t-mag);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.t-h::before {
+    content: '## ';
+}
+
+.t-out > .t-h:first-child {
+    margin-top: 12px;
+}
+
+.t-comment {
+    margin-top: 10px;
+    color: var(--t-dim);
+}
+
+/* ---- whoami ---------------------------------------------------------- */
+.t-ascii-wrap {
+    margin: 0 -4px;
+    padding: 0 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.t-ascii-wrap::-webkit-scrollbar {
+    display: none;
+}
+
+.t-ascii {
+    margin-top: 6px;
+    color: var(--t-grn);
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.05;
+    white-space: pre;
+}
+
+.t-tag {
+    margin-top: 18px;
+    font-size: 15px;
+}
+
+.t-role {
+    color: var(--t-cyn);
+}
+
+.t-cursor {
+    display: inline-block;
+    width: 9px;
+    height: 1.05em;
+    margin-left: 3px;
+    vertical-align: -2px;
+    background: var(--t-grn);
+    animation: t-blink 1.05s steps(2) infinite;
+}
+
+@keyframes t-blink {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+}
+
+.t-kv {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 2px 14px;
+    margin-top: 14px;
+}
+
+.t-kv dt {
+    color: var(--t-dim);
+}
+
+.t-kv a,
+.t-res a {
+    color: var(--t-cyn);
+    border-bottom: 1px solid var(--t-line);
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.t-kv a:hover,
+.t-res a:hover {
+    color: var(--t-grn);
+    border-color: var(--t-grn);
+}
+
+/* ---- about ----------------------------------------------------------- */
+.t-prose p {
+    max-width: 72ch;
+}
+
+.t-prose p + p {
+    margin-top: 0.9em;
+}
+
+/* ---- neofetch -------------------------------------------------------- */
+.t-nf {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 26px;
+    margin-top: 12px;
+}
+
+.t-nf-logo {
+    color: var(--t-cyn);
+    font: inherit;
+    font-size: 12px;
+    line-height: 1.25;
+    white-space: pre;
+    text-shadow: 0 0 8px color-mix(in srgb, var(--t-cyn) 25%, transparent);
+}
+
+.t-nf-info {
+    flex: 1;
+    min-width: 280px;
+}
+
+.t-nf-title {
+    font-weight: 500;
+}
+
+.t-nf-row {
+    display: flex;
+    gap: 8px;
+    line-height: 1.7;
+}
+
+.t-nf-row dt {
+    min-width: 11ch;
+    color: var(--t-grn);
+    font-weight: 500;
+}
+
+.t-nf-row dd::before {
+    content: ': ';
+    color: var(--t-dim);
+}
+
+.t-palette {
+    display: flex;
+    gap: 6px;
+    margin-top: 14px;
+}
+
+.t-palette span {
+    width: 17px;
+    height: 17px;
+    border-radius: 3px;
+}
+
+/* ---- skills ---------------------------------------------------------- */
+.t-ls {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16ch, 1fr));
+    gap: 2px 14px;
+    margin-top: 10px;
+    list-style: none;
+    color: var(--t-cyn);
+}
+
+/* ---- projects: an ls -la listing ------------------------------------- */
+.t-projects {
+    margin-top: 10px;
+    list-style: none;
+}
+
+.t-proj {
+    display: grid;
+    grid-template-columns: 11ch 23ch minmax(0, 1fr);
+    column-gap: 10px;
+    padding: 7px 10px;
+    border-bottom: 1px dashed var(--t-line);
+    transition: background-color 0.2s;
+}
+
+.t-proj:hover,
+.t-proj:focus-visible {
+    background-color: color-mix(in srgb, var(--t-grn) 9%, transparent);
+}
+
+.t-perm {
+    color: var(--t-dim);
+    white-space: nowrap;
+}
+
+.t-name {
+    color: var(--t-cyn);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.t-name::after {
+    content: '/';
+    color: var(--t-dim);
+}
+
+.t-proj:hover .t-name,
+.t-proj:focus-visible .t-name {
+    color: var(--t-grn);
+}
+
+.t-repo {
+    display: block;
+    color: var(--t-yel);
+    font-size: 12.5px;
+}
+
+.t-arr {
+    display: inline-block;
+    color: var(--t-grn);
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.t-proj:hover .t-arr,
+.t-proj:focus-visible .t-arr {
+    opacity: 1;
+    transform: translateX(3px);
+}
+
+/* ---- education: a git log -------------------------------------------- */
+.t-log {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+    list-style: none;
+}
+
+.t-commit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 10px;
+    padding: 14px 16px;
+    border: 1px solid var(--t-line);
+    border-radius: 8px;
+}
+
+.t-hash {
+    color: var(--t-yel);
+}
+
+.t-commit-title {
+    color: var(--t-cyn);
+    font-weight: 500;
+}
+
+.t-meta {
+    margin-left: auto;
+    color: var(--t-dim);
+    font-size: 12.5px;
+}
+
+/* ---- contact --------------------------------------------------------- */
+.t-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+    list-style: none;
+}
+
+.t-card {
+    display: block;
+    height: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--t-line);
+    border-radius: 7px;
+    transition: border-color 0.25s, background-color 0.25s;
+}
+
+.t-card:hover,
+.t-card:focus-visible {
+    border-color: var(--t-grn);
+    background-color: color-mix(in srgb, var(--t-grn) 5%, transparent);
+}
+
+.t-card-label {
+    display: block;
+    color: var(--t-dim);
+    font-size: 12px;
+}
+
+.t-card-value {
+    display: block;
+    margin-top: 2px;
+    color: var(--t-cyn);
+    overflow-wrap: anywhere;
+}
+
+.t-card:hover .t-card-value,
+.t-card:focus-visible .t-card-value {
+    color: var(--t-grn);
+}
+
+.t-foot {
+    margin-top: 34px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--t-line);
+    color: var(--t-dim);
+    font-size: 12.5px;
+}
+
+/* ---- interactive shell ----------------------------------------------- */
+.t-h-shell {
+    margin-top: 28px;
+}
+
+.t-h-shell + .t-comment {
+    margin-top: 4px;
+    font-size: 12.5px;
+}
+
+.t-console {
+    min-height: 120px;
+    max-height: 360px;
+    margin-top: 12px;
+    padding: 14px 16px;
+    overflow-y: auto;
+    border: 1px solid var(--t-line);
+    border-radius: 8px;
+    background: var(--t-bg); /* sunk into the window */
+    cursor: text;
+    scrollbar-width: thin;
+    scrollbar-color: var(--t-line) transparent;
+    transition: border-color 0.2s;
+}
+
+.t-console:focus-within {
+    border-color: var(--t-grn);
+}
+
+.t-echo {
+    margin-top: 6px;
+    color: var(--t-dim);
+}
+
+.t-echo:first-child {
+    margin-top: 0;
+}
+
+.t-res {
+    overflow-wrap: anywhere;
+}
+
+.t-res strong {
+    color: var(--t-cyn);
+    font-weight: 500;
+}
+
+.t-console .help-grid {
+    grid-template-columns: 12ch minmax(0, 1fr);
+    row-gap: 0;
+    margin: 4px 0;
+}
+
+.t-console .donut-frame {
+    color: var(--t-grn);
+}
+
+.t-line {
+    display: flex;
+    align-items: center;
+    gap: 1ch;
+    margin-top: 6px;
+}
+
+.t-ps1 {
+    white-space: nowrap;
+    cursor: text;
+}
+
+#terminal-input {
+    flex: 1;
+    min-width: 40px;
+    padding: 0;
+    border: none;
+    outline: none;
+    background: none;
+    color: var(--t-fg);
+    font: inherit;
+    caret-color: var(--t-grn);
+}
+
+/* The input shows focus through the console border */
+.tw #terminal-input:focus-visible {
+    outline: none;
+}
+
+/* Help menu grid (also used by the retro Terminal.exe) */
+.help-grid {
+    display: grid;
+    grid-template-columns: 95px 1fr;
+    column-gap: 10px;
+    row-gap: 6px;
+    font-family: inherit;
+    margin-top: 0.5rem;
+}
+
+/* ---- Terminal: smaller screens --------------------------------------- */
+@media (max-width: 760px) {
+    #terminal-view {
+        padding: 16px 16px 120px;
+    }
+
+    .tw {
+        border-radius: 9px;
+    }
+}
+
+/* Phones: the window becomes the page, the title bar sticks to the top,
+   and the project listing turns into cards */
+@media (max-width: 560px) {
+    #terminal-view {
+        padding: 0 0 110px;
+    }
+
+    .tw {
+        min-height: 100dvh;
+        border-width: 0 0 1px;
+        border-radius: 0;
+        box-shadow: none;
+        font-size: 13.5px;
+        line-height: 1.7;
+    }
+
+    body.classic-dark .tw {
+        box-shadow: none;
+    }
+
+    .tw-bar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+    }
+
+    .tw-path {
+        display: none;
+    }
+
+    .tw-body {
+        padding: 20px 16px 40px;
+    }
+
+    .t-out {
+        margin-bottom: 24px;
+    }
+
+    .t-ascii {
+        font-size: 11px;
+    }
+
+    .t-tag {
+        font-size: 14px;
+    }
+
+    .t-kv {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    .t-kv dt {
+        margin-top: 9px;
+    }
+
+    .t-kv dt::before {
+        content: '› ';
+        color: var(--t-grn);
+    }
+
+    .t-nf {
+        gap: 14px;
+    }
+
+    .t-nf-logo {
+        font-size: 10.5px;
+    }
+
+    .t-nf-info {
+        min-width: 0;
+    }
+
+    .t-nf-row dt {
+        min-width: 10ch;
+    }
+
+    .t-projects li + li {
+        margin-top: 10px;
+    }
+
+    .t-proj {
+        display: block;
+        padding: 12px;
+        border: 1px solid var(--t-line);
+        border-radius: 7px;
+    }
+
+    .t-perm {
+        display: none;
+    }
+
+    .t-name {
+        display: block;
+        font-size: 15px;
+    }
+
+    .t-repo {
+        margin-top: 6px;
+    }
+
+    .t-arr {
+        float: right;
+        opacity: 1;
+    }
+
+    .t-commit {
+        padding: 12px 14px;
+    }
+
+    .t-meta {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .t-cards {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 9px;
+    }
+
+    .t-foot {
+        font-size: 11.5px;
+    }
+}
+
+@media (max-width: 360px) {
+    .tw {
+        font-size: 12.5px;
+    }
+
+    .tw-body {
+        padding: 16px 12px 34px;
+    }
+
+    .t-ascii {
+        font-size: 9px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .t-cursor {
+        animation: none;
+    }
+
+    .t-blk {
+        opacity: 1;
+        transform: none;
+    }
+
+    .tw *,
+    .t-blk {
+        transition: none;
+    }
+}
+
+
+/* Narrow phones: slightly smaller switch in the floating dock */
+@media (max-width: 380px) {
+    .style-opt {
+        --opt-pad: 11px;
+        font-size: 0.9rem;
+    }
+}
+
+
+/***************************/
+
+
+
+
+
+
+
+/**************************/
+/* Hidden scrollbars, only in the terminal and retro styles (retro windows bring theirs back) */
+body.terminal-active,
+body.terminal-active *,
+body.retro-active,
+body.retro-active *,
+.ascii-art,
+.donut-frame {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+body.terminal-active::-webkit-scrollbar,
+body.terminal-active *::-webkit-scrollbar,
+body.retro-active::-webkit-scrollbar,
+body.retro-active *::-webkit-scrollbar,
+.ascii-art::-webkit-scrollbar,
+.donut-frame::-webkit-scrollbar {
+    display: none;
+}
+/***************************/
+
+
+
+/***************************/
+
+/* --- ASCII Donut specific styling --- */
+.donut-frame {
+    font-family: monospace;
+    
+    /* NEW: Scales the donut down on phones, caps at 12px on desktop */
+    font-size: clamp(4px, 1.8vw, 12px); 
+    line-height: clamp(4px, 1.8vw, 12px); /* Must exactly match font-size to stay 3D */
+    
+    white-space: pre; /* Strictly prevents any text wrapping */
+    color: #0f0;
+    margin-top: 1rem;
+    overflow-x: hidden; 
+    
+    /* NEW: Centers the text inside the terminal window */
+    text-align: center; 
+}
+/***************************/
+
+
+/**************************/
+/* UI/UX pass */
+
+/* Text that only screen readers hear (and the hidden education separators) */
+.sr-only,
+.sep {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Comfortable reading width for longer paragraphs */
+#about-data,
+#info-desc {
+    max-width: 68ch;
+}
+
+#about-data {
+    font-size: 1.0625rem;
+}
+
+/* Skills are information, not buttons: flat chips with no shadow or hover */
+.skill-tag1 {
+    background-color: transparent;
+    box-shadow: none;
+    font-weight: 500;
+}
+
+/* Keep the "Details →" cue on one line on narrow screens */
+.project-btn::after {
+    white-space: nowrap;
+}
+
+/* Visible keyboard focus on everything clickable in the minimal view */
+#classic-view a:focus-visible,
+#classic-view button:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 3px;
+}
+
+/* Less motion for visitors who ask for it */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+/**************************/
