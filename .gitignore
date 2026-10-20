@@ -1,0 +1,2 @@
+# DNS zone exports / imports (contain registrar config, not part of the site)
+*.bind
