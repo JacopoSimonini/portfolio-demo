@@ -4,4 +4,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://jacoposimonini.github.io/portfolio-demo/sitemap.xml
+Sitemap: https://jacoposimonini.com/sitemap.xml
